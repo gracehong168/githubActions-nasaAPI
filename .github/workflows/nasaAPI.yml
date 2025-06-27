@@ -15,16 +15,9 @@ jobs:
         run: |
           curl "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.NASA_API_KEY }}" -o nasa_apod.json
 
-      - name: Extract image URL and download if image
+      - name: Download NASA image directly
         run: |
-          MEDIA_TYPE=$(jq -r '.media_type' nasa_apod.json)
-          if [[ "$MEDIA_TYPE" == "image" ]]; then
-            IMAGE_URL=$(jq -r '.hdurl // .url' nasa_apod.json)
-            echo "Downloading image from: $IMAGE_URL"
-            curl "$IMAGE_URL" -o apod_image.jpg
-          else
-            echo "The media type is not an image: $MEDIA_TYPE"
-          fi
+          curl -L "https://apod.nasa.gov/apod/image/2506/M109_Robert_Eder1024.jpg" -o nasa_image.jpg
 
       - name: Upload JSON and image (if exists) as artifacts
         uses: actions/upload-artifact@v4
