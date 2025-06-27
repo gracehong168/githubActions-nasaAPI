@@ -17,14 +17,9 @@ jobs:
 
       - name: Extract image URL and download if image
         run: |
-          MEDIA_TYPE=$(jq -r '.media_type' nasa_apod.json)
-          if [[ "$MEDIA_TYPE" == "image" ]]; then
-            IMAGE_URL=$(jq -r '.hdurl // .url' nasa_apod.json)
+            IMAGE_URL=$(jq -r '.hdurl' nasa_apod.json)
             echo "Downloading image from: $IMAGE_URL"
-            curl "$IMAGE_URL" -o apod_image.jpg
-          else
-            echo "The media type is not an image: $MEDIA_TYPE"
-          fi
+            curl "$IMAGE_URL" -o apod_image.jpg         
 
       - name: Upload JSON and image (if exists) as artifacts
         uses: actions/upload-artifact@v4
