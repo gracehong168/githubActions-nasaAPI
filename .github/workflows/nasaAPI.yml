@@ -1,0 +1,24 @@
+name: NASA API Call
+
+on:
+  workflow_dispatch:  # Triggered manually
+
+jobs:
+  fetch-nasa-data:
+    name: Fetch NASA APOD Data
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch NASA Astronomy Picture of the Day
+        run: |
+          curl "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.NASA_API_KEY }}" -o nasa_apod.json
+
+      - name: Upload result as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nasa-apod-result
+          path: nasa_apod.json
+
