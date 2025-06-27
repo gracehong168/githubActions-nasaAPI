@@ -1,24 +1,30 @@
-name: NASA API Call
+name: NASA APOD Image Downloader
 
 on:
-  workflow_dispatch:  # Triggered manually
+  workflow_dispatch:
 
 jobs:
-  fetch-nasa-data:
-    name: Fetch NASA APOD Data
+  download-nasa-image:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Fetch NASA Astronomy Picture of the Day
+      - name: Fetch APOD JSON from NASA API
         run: |
           curl "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.NASA_API_KEY }}" -o nasa_apod.json
 
-      - name: Upload result as artifact
+      - name: Extract image URL and download the image
+        run: |
+          IMAGE_URL=$(jq -r '.url' nasa_apod.json)
+          echo "Downloading image from: $IMAGE_URL"
+          curl "$IMAGE_URL" -o apod_image.jpg
+
+      - name: Upload JSON and image as artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: nasa-apod-result
-          path: nasa_apod.json
-
+          name: nasa-apod-assets
+          path: |
+            nasa_apod.json
+            apod_image.jpg
